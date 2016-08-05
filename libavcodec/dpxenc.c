@@ -218,8 +218,8 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     write32(buf + 772, avctx->width);
     write32(buf + 776, avctx->height);
     buf[800] = s->descriptor;
-    buf[801] = 2; /* linear transfer */
-    buf[802] = 2; /* linear colorimetric */
+    buf[801] = 1; /* printing density transfer */
+    buf[802] = 1; /* printing density colorimetric */
     buf[803] = s->bits_per_component;
     write16(buf + 804, (s->bits_per_component == 10 || s->bits_per_component == 12) ?
                        1 : 0); /* packing method */
