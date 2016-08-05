@@ -129,7 +129,7 @@ static int decode_frame(AVCodecContext *avctx,
     // Need to end in 0x320 to read the descriptor
     buf += 20;
     descriptor = buf[0];
-
+    av_log(avctx, AV_LOG_INFO, "transfer:%i, colormetric:%i\n", buf[1], buf[2]);
     // Need to end in 0x323 to read the bits per color
     buf += 3;
     avctx->bits_per_raw_sample =
