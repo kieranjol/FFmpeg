@@ -282,7 +282,7 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
 #define OFFSET(x) offsetof(DPXContext, x)
 #define VE AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_ENCODING_PARAM
 static const AVOption options[] = {
-    {"trc", "Transfer Characteristics", OFFSET(trc), AV_OPT_TYPE_INT, {.i64 = 0}, INT_MIN, INT_MAX, VE },
+    {"trc", "Transfer Characteristics", OFFSET(trc), AV_OPT_TYPE_INT, {.i64 = 2}, 0, 12, VE },
     { NULL},
 };
 
