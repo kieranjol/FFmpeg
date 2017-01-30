@@ -24,14 +24,18 @@
 #include "libavutil/imgutils.h"
 #include "avcodec.h"
 #include "internal.h"
+#include "libavutil/opt.h"
 
 typedef struct DPXContext {
+    AVClass *class;
     int big_endian;
     int bits_per_component;
     int num_components;
     int descriptor;
     int planar;
+    int trc;
 } DPXContext;
+
 
 static av_cold int encode_init(AVCodecContext *avctx)
 {
@@ -218,8 +222,8 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     write32(buf + 772, avctx->width);
     write32(buf + 776, avctx->height);
     buf[800] = s->descriptor;
-    buf[801] = 2; /* linear transfer */
-    buf[802] = 2; /* linear colorimetric */
+    buf[801] = s->trc; /* linear transfer */
+    buf[802] = s->trc; /* linear colorimetric */
     buf[803] = s->bits_per_component;
     write16(buf + 804, (s->bits_per_component == 10 || s->bits_per_component == 12) ?
                        1 : 0); /* packing method */
@@ -275,7 +279,19 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
 
     return 0;
 }
+#define OFFSET(x) offsetof(DPXContext, x)
+#define VE AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_ENCODING_PARAM
+static const AVOption options[] = {
+    {"trc", "Transfer Characteristics", OFFSET(trc), AV_OPT_TYPE_INT, {.i64 = 0}, INT_MIN, INT_MAX, VE },
+    { NULL},
+};
 
+static const AVClass dpxenc_class = {
+    .class_name = "DPX encoder",
+    .item_name  = av_default_item_name,
+    .option     = options,
+    .version    = LIBAVUTIL_VERSION_INT,
+};
 AVCodec ff_dpx_encoder = {
     .name           = "dpx",
     .long_name      = NULL_IF_CONFIG_SMALL("DPX (Digital Picture Exchange) image"),
@@ -293,4 +309,5 @@ AVCodec ff_dpx_encoder = {
         AV_PIX_FMT_GBRP10LE, AV_PIX_FMT_GBRP10BE,
         AV_PIX_FMT_GBRP12LE, AV_PIX_FMT_GBRP12BE,
         AV_PIX_FMT_NONE},
+    .priv_class     = &dpxenc_class,
 };
