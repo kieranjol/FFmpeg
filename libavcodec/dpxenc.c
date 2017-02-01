@@ -33,7 +33,9 @@ typedef struct DPXContext {
     int num_components;
     int descriptor;
     int planar;
-    int trc;
+    int transfer_characteristic;
+    int colorimetric_specification;
+    
 } DPXContext;
 
 
@@ -222,8 +224,8 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     write32(buf + 772, avctx->width);
     write32(buf + 776, avctx->height);
     buf[800] = s->descriptor;
-    buf[801] = s->trc; /* linear transfer */
-    buf[802] = s->trc; /* linear colorimetric */
+    buf[801] = s->transfer_characteristic;
+    buf[802] = s->colorimetric_specification;
     buf[803] = s->bits_per_component;
     write16(buf + 804, (s->bits_per_component == 10 || s->bits_per_component == 12) ?
                        1 : 0); /* packing method */
@@ -282,7 +284,8 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
 #define OFFSET(x) offsetof(DPXContext, x)
 #define VE AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_ENCODING_PARAM
 static const AVOption options[] = {
-    {"trc", "Transfer Characteristics", OFFSET(trc), AV_OPT_TYPE_INT, {.i64 = 2}, 0, 12, VE },
+    {"trc", "Transfer Characteristics", OFFSET(transfer_characteristic), AV_OPT_TYPE_INT, {.i64 = 2}, 0, 12, VE },
+    {"clr", "Colorimetric Specification", OFFSET(colorimetric_specification), AV_OPT_TYPE_INT, {.i64 = 2}, 0, 12, VE },
     { NULL},
 };
 
